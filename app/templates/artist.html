@@ -1,13 +1,9 @@
-Here is some more info about {{name}}
 
-{% for artist in related %}
-    <p>Related Artists are <a href="{{artist[0]}}">{{artist[0]}}</a> </p>
-    <p>Their ID is {{artist[1]}}</p>
-    <img src="{{artist[2]}}" alt="artist image" style="width:304px;height:228px;">
+<h1>Artist Page</h1>
 
-    <br>
-
-{% endfor %}
+ Artist name is {{name}}
 
 
-<!-- button here to find related artists. submits id -->
+<p>Artist ID is: {{id}}</p>
+
+<a href="related-artist/{{name}}">Get Related Artists</a>
