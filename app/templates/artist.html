@@ -1,9 +1,19 @@
+{% extends "bootstrap/base.html" %}
 
-<h1>Artist Page</h1>
+{% block content %}
+<div class="container">
+    <div class="jumbotron">
+        <h1>Artist Page</h1>
+    </div> <!-- jumbrotron -->
+</div> <!-- container -->
+<div class="container-fluid">
+     Artist name is {{name}}
 
- Artist name is {{name}}
 
+    <p>Artist ID is: {{id}}</p>
+    <img src="{{image}}" alt="artist image" ;">
 
-<p>Artist ID is: {{id}}</p>
+    <a href="related-artist/{{name}}">Get Related Artists</a>
+</div> <!--container-fluid-->
 
-<a href="related-artist/{{name}}">Get Related Artists</a>
+{% endblock %}
