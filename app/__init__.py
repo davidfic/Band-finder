@@ -1,6 +1,10 @@
 from flask import Flask
+from flask_bootstrap import Bootstrap
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
+    Bootstrap(app)
+
+    return app
+# app = Flask(__name__)
 from app import views
-
-

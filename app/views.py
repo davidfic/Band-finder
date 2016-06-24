@@ -1,5 +1,7 @@
-from app import app
+from app import create_app
 from flask import render_template
+
+app = create_app()
 import spotipy
 sp = spotipy.Spotify()
 from pprint import pprint
