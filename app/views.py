@@ -1,38 +1,38 @@
 from app import app
 from flask import render_template
-
+import requests
 
 import spotipy
 sp = spotipy.Spotify()
 from pprint import pprint
 
 def get_related_artists(artist_id):
-    related_artists = sp.artist_related_artists(artist_id)
+    request_string = 'https://api.spotify.com/v1/artists/' + artist_id + '/related-artists'
+    r = requests.get(request_string)
     related_artist_list = []
-    for artist in related_artists['artists']:
+    for artist in r.json()['artists']:
         related_artist_list.append(artist['name'])
-
 
     return related_artist_list
 
 def get_preview_track(artist_id):
-    track = sp.artist_top_tracks(artist_id, country='US')
-    # pprint(track)
-    return track['tracks'][0]['preview_url']
+    payload = {'country': 'US'}
+    request_string = 'https://api.spotify.com/v1/artists/' + artist_id + '/top-tracks'
+    r = requests.get(request_string, params=payload)
+    return r.json()['tracks'][0]['preview_url']
 
 def get_artist_id(artist_name):
-    artist_id = sp.search(artist_name,type='artist')
-    # print artist_id['artists']['items'][0]['id']
-    return artist_id['artists']['items'][0]['id']
+    payload = {'q': artist_name, 'type': 'artist'}
+    r = requests.get("https://api.spotify.com/v1/search", params=payload)
+    # get json format from response and extract ID
+    return r.json()['artists']['items'][0]['id']
 
 def get_artist_image(artist_id, image_num=1):
-    results = sp.artist(artist_id)
-    image_list = results['images']
+    r = requests.get('https://api.spotify.com/v1/artists/' + artist_id)
+    image_list = r.json()['images']
     if len(image_list) <= 2:
         image_num = 1
-    print artist_id
-    print "results are:" ,results['images'][image_num]['url']
-    return results['images'][image_num]['url']
+    return r.json()['images'][image_num]['url']
 
 @app.route('/',methods=['GET', 'POST'])
 def index():
