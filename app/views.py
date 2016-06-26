@@ -39,7 +39,6 @@ def index():
     return render_template('index.html')
 
 @app.route('/artist/<name>',methods=['GET', 'POST'])
-# @app.route('/artist/<name>', methods=['GET', 'POST'])
 def artist(name=""):
     print "name is: " , name
     results = sp.search(q='artist:' + name, type='artist')
