@@ -2,8 +2,6 @@ from app import app
 from flask import render_template
 import requests
 
-import spotipy
-sp = spotipy.Spotify()
 from pprint import pprint
 
 def get_related_artists(artist_id):
@@ -39,22 +37,20 @@ def index():
     return render_template('index.html')
 
 @app.route('/artist/<name>',methods=['GET', 'POST'])
-# @app.route('/artist/<name>', methods=['GET', 'POST'])
 def artist(name=""):
     print "name is: " , name
-    results = sp.search(q='artist:' + name, type='artist')
-    artist_id = results['artists']['items'][0]['id']
+    payload = {'q': name, 'type': 'artist'}
+    r = requests.get('https://api.spotify.com/v1/search/', params=payload )
+    artist_id = r.json()['artists']['items'][0]['id']
     return render_template('artist.html',name=name,id=artist_id ,image=get_artist_image(artist_id,image_num=1))
 
 @app.route('/artist/related-artist/<name>')
 def related_artists(name):
-    results = sp.search(q='artist:' + name, limit=4, type='artist' )
-    artist_id = results['artists']['items'][0]['id']
 
     artist_image = []
     related_artists_ids = []
     preview_tracks = []
-    related_artists = get_related_artists(artist_id)
+    related_artists = get_related_artists(get_artist_id(name))
     for related_artist in related_artists:
         rel_artist_id = get_artist_id(related_artist)
         related_artists_ids.append(rel_artist_id)
@@ -62,4 +58,4 @@ def related_artists(name):
         preview_tracks.append(get_preview_track(rel_artist_id))
 
     zipped_list = zip(related_artists, related_artists_ids, artist_image,preview_tracks)
-    return render_template('related-artist.html', name=name, id=artist_id, related=zipped_list)
+    return render_template('related-artist.html', name=name, id=get_artist_id(name), related=zipped_list)
