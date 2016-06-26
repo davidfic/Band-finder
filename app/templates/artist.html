@@ -3,17 +3,16 @@
 {% block content %}
 <div class="container">
     <div class="jumbotron">
-        <h1>Artist Page</h1>
+        <h1>Artist Page for {{name | capitalize}}</h1>
     </div> <!-- jumbrotron -->
 </div> <!-- container -->
-<div class="container-fluid">
-     Artist name is {{name}}
-
+<div class="container">
+     <p>Artist name is {{name}}</p>
 
     <p>Artist ID is: {{id}}</p>
     <img src="{{image}}" alt="artist image" ;">
-
-    <a href="related-artist/{{name}}">Get Related Artists</a>
+    <br>
+    <h2><a href="related-artist/{{name}}">Get Related Artists</a></h2>
 </div> <!--container-fluid-->
 
 {% endblock %}

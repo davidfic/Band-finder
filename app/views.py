@@ -38,7 +38,7 @@ def get_artist_image(artist_id, image_num=1):
 def index():
     return render_template('index.html')
 
-@app.route('/artist/?<name>',methods=['GET', 'POST'])
+@app.route('/artist/<name>',methods=['GET', 'POST'])
 # @app.route('/artist/<name>', methods=['GET', 'POST'])
 def artist(name=""):
     print "name is: " , name
