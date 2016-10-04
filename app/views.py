@@ -12,6 +12,7 @@ PREVIEW_DEBUG = True
 
 
 def get_related_artists(artist_id):
+
     if REL_DEBUG:
         start = time.time()
     request_string = 'https://api.spotify.com/v1/artists/' \
@@ -108,34 +109,38 @@ def artist(name=""):
 
 @app.route('/related-artists/<name>')
 def related_artists(name):
+
     print "received the name: {} from call".format(name)
+
     if DEBUG:
         start = time.time()
+
     artist_image = []
     related_artists_ids = []
-    related_artists = get_related_artists(get_artist_id(name))
     preview_track_urls = []
+    name_list = []
+
+    related_artists = get_related_artists(get_artist_id(name))
 
     for related_artist in related_artists:
         related_artists_ids.append(related_artist['id'])
         artist_image.append(related_artist['images'][1]['url'])
         preview_track_urls.append(load_preview_track_url(related_artist['id']))
 
-    name_list = []
     for item in related_artists:
         name_list.append(item['name'])
 
     preview_tracks = get_preview_tracks_async(preview_track_urls)
+
     zipped_list = zip(name_list,
                       related_artists_ids,
                       artist_image, preview_tracks)
-    for id in related_artists_ids:
-        print("sending ID: {}").format(id)
 
     if DEBUG:
         end = time.time()
         total_time = end - start
         print('related_artists took {} seconds'.format(total_time))
+
     return render_template('related-artist.html',
                            name=name,
                            id=related_artists_ids,
