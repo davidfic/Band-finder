@@ -12,7 +12,6 @@ IMG_DEBUG = False
 PREVIEW_DEBUG = True
 
 
-
 def get_related_artists(artist_id):
     if REL_DEBUG:
         start = time.time()
@@ -26,7 +25,6 @@ def get_related_artists(artist_id):
         end = time.time()
         total_time = end - start
         print('get_related_artists took {} seconds'.format(total_time))
-    # return [related_artist_list, request_string ]
     return full_list
 
 def load_preview_track_url(artist_id):
@@ -119,15 +117,13 @@ def related_artists(name):
         related_artists_ids.append(related_artist['id'])
         artist_image.append(related_artist['images'][1]['url'])
         preview_track_urls.append(load_preview_track_url(related_artist['id']))
-        # artist_image.append(get_artist_image(rel_artist_id,image_num=2))
-        # preview_tracks.append('https://api.spotify.com/v1/artists/' + related_artist['id'] + '/top-tracks?country=US')
-        # preview_tracks.append(load_preview_track_url(related_artist['id']))
 
-    print(related_artists[0])
-    # for artist in related_artists:
-    #     print (artist)
+    name_list = []
+    for item in related_artists:
+        name_list.append(item['name'])
+
     preview_tracks = get_preview_tracks_async(preview_track_urls)
-    zipped_list = zip(related_artists, related_artists_ids, artist_image,preview_tracks)
+    zipped_list = zip(name_list, related_artists_ids, artist_image,preview_tracks)
     if DEBUG:
         end = time.time()
         total_time = end - start
