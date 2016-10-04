@@ -1,8 +1,6 @@
 from app import app
 from flask import render_template
 import requests
-import asyncio
-import aiohttp
 import json
 import time
 import ast
@@ -13,20 +11,6 @@ REL_DEBUG = False
 IMG_DEBUG = False
 PREVIEW_DEBUG = True
 
-# @asyncio.coroutine
-# def do_work(task_name, work_queue):
-#     while not workd_queue.empty():
-#         queue_item = yield from work_queue.get()
-#         print('{0} grabbed item: {1} from queue'.format(task_name, queue_item))
-#         yield from asyncio.sleep(0.5)
-
-# @asyncio.coroutine
-# def get_related_artist_async(artist_id):
-#     request_string = 'https://api.spotify.com/v1/artists/' + artist_id + '/related-artists'
-#     response = yield from aiohttp.request('GET', request_strint)
-#     related_artist_list = []
-#     for artist in r.json()['artists']:
-#         related_artist_list.append(artist['name'])
 
 
 def get_related_artists(artist_id):
@@ -75,14 +59,6 @@ def get_artist_id(artist_name):
         print('get_artist_id took {} seconds'.format(total_time))
     return r.json()['artists']['items'][0]['id']
 
-@asyncio.coroutine
-def get_artist_image_async(artist_id, image_num=1):
-    request_string = requests.get('https://api.spotify.com/v1/artists/' + artist_id)
-    image_list = r.json()['images']
-    if len(image_list) <= 2:
-        image_num = 1
-
-
 
 def get_preview_tracks_async(preview_tracks):
     urls = preview_tracks
@@ -129,7 +105,7 @@ def artist(name=""):
         print('artist took {} seconds'.format(total_time))
     return render_template('artist.html',name=name,id=artist_id ,image=get_artist_image(artist_id,image_num=1))
 
-# @asyncio.coroutine
+
 @app.route('/artist/related-artists/<name>')
 def related_artists(name):
     if DEBUG:
@@ -138,16 +114,6 @@ def related_artists(name):
     related_artists_ids = []
     related_artists = get_related_artists(get_artist_id(name))
     preview_track_urls = []
-    # print("related_artists", related_artists)
-   # queue = asyncio.Queue()
-  #  tasks = [
-  #      asyncio.async(do_work(get_artist_id(related_artist))),
-  #      asyncio.async(do_work(related_artists_ids.append(rel_artist_id))),
-  #      asyncio.aysnc(do_work(artist_image.append(get_artist_image(rel_artist_id, iamge_num=2)))),
-  #      asyncio.aysnc(do_work(preview_tracks.append(get_preview_track(rel_artist_id))))]
-   # loop.run_until_complete(asyncio.wait(tasks))
-   # loop.close()
-
 
     for related_artist in related_artists:
         related_artists_ids.append(related_artist['id'])
@@ -157,9 +123,10 @@ def related_artists(name):
         # preview_tracks.append('https://api.spotify.com/v1/artists/' + related_artist['id'] + '/top-tracks?country=US')
         # preview_tracks.append(load_preview_track_url(related_artist['id']))
 
-
+    print(related_artists[0])
+    # for artist in related_artists:
+    #     print (artist)
     preview_tracks = get_preview_tracks_async(preview_track_urls)
-    #
     zipped_list = zip(related_artists, related_artists_ids, artist_image,preview_tracks)
     if DEBUG:
         end = time.time()
