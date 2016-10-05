@@ -1,11 +1,23 @@
-{% extends "bootstrap/base.html" %}
+<head>
+<link rel="stylesheet" href="{{url_for('.static', filename='mystyle.css')}}">
 
-{% block content %}
+<script   src="https://code.jquery.com/jquery-3.1.1.min.js"  > </script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+</head>
+{% block body %}
 <div class="container">
     <div class="jumbotron">
       <h1>Artist Page for: <br>{{name | title}}</h1>
     </div> <!-- jumbrotron -->
 </div> <!-- container -->
+		<div style="width: 600px; height: 400px; margin: 0 auto">
+		    <div id="container-speed" style="width: 300px; height: 200px; float: left"></div>
+		    <div id="container-rpm" style="width: 300px; height: 200px; float: left"></div>
+		</div>
 <div class="container">
      <p>Artist name is:: {{name}}</p>
 
@@ -28,4 +40,95 @@
       <input type="submit" value="Submit" />
   </form>
 </div>
+
+<script type=text/javascript>
+$(function () {
+
+    var gaugeOptions = {
+
+        chart: {
+            type: 'solidgauge'
+        },
+
+        title: null,
+
+        pane: {
+            center: ['20%', '95%'],
+            size: '40%',
+            startAngle: -90,
+            endAngle: 90,
+            background: {
+                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                innerRadius: '60%',
+                outerRadius: '100%',
+                shape: 'arc'
+            }
+        },
+
+        tooltip: {
+            enabled: false
+        },
+
+        // the value axis
+        yAxis: {
+            stops: [
+                [0.1, '#55BF3B'], // green
+                [0.5, '#DDDF0D'], // yellow
+                [0.9, '#DF5353'] // red
+            ],
+            lineWidth: 1,
+            minorTickInterval: null,
+            tickAmount: 1,
+            title: {
+                y: -70
+            },
+            labels: {
+                y: 16
+            }
+        },
+
+        plotOptions: {
+            solidgauge: {
+                dataLabels: {
+                    y: 5,
+                    borderWidth: 0,
+                    useHTML: true
+                }
+            }
+        }
+    };
+
+    // The speed gauge
+    $('#container-speed').highcharts(Highcharts.merge(gaugeOptions, {
+        yAxis: {
+            min: 0,
+            max: 100,
+            title: {
+                text: 'Popularity'
+            }
+        },
+
+        credits: {
+            enabled: false
+        },
+
+        series: [{
+            name: 'Popularity',
+            data: [{{pop}}],
+            dataLabels: {
+           },
+            tooltip: {
+                valueSuffix: ''
+            }
+        }]
+
+    }));
+
+ 
+});
+</script>
+
+
 {% endblock %}
+
+
