@@ -95,15 +95,38 @@ def artist(name=""):
         result = request.form['name']
     name = result
     payload = {'q': name, 'type': 'artist'}
-    r = requests.get('https://api.spotify.com/v1/search/', params=payload)
-    artist_id = r.json()['artists']['items'][0]['id']
+#    r = requests.get('https://api.spotify.com/v1/search/', params=payload)
+    artist_id = get_artist_id(name)
+#    print('artist id is {}'.format(artist_id))
+    r = requests.get('https://api.spotify.com/v1/artists/' + artist_id) 
+    album_request_string = 'https://api.spotify.com/v1/artists/' + artist_id + '/albums'
+#    print 'album_request_string is: ', album_request_string
+
+    album_request = requests.get(album_request_string)
+    album_list = []
+#    print(r.json())
+    for album in album_request.json()['items']:
+#        print album['name']
+        if album['name'] not in album_list:
+            album_list.append(album['name'])
+
+    popularity = r.json()['popularity']
+    followers = r.json()['followers']['total']
+    open_link = r.json()['external_urls']['spotify']
+#    print('open_link is {}'.format( open_link))
+#    print('followers is {}'.format( followers))
+#    print('artist image url: {}'.format(get_artist_image(artist_id)))
     if DEBUG:
         end = time.time()
         total_time = end - start
-        print('artist took {} seconds'.format(total_time))
+#        print('artist took {} seconds'.format(total_time))
     return render_template('artist.html',
                            name=name,
                            id=artist_id,
+                           followers=followers,
+                           pop=popularity,
+                           open_link=open_link,
+                           album_list=album_list,
                            image=get_artist_image(artist_id, image_num=1))
 
 
