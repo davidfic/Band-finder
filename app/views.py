@@ -1,5 +1,9 @@
 from app import app
 from flask import render_template, request
+from flask_wtf import Form
+from wtforms import StringField, SubmitField
+from wtforms.validators import Required
+
 import requests
 import json
 import time
