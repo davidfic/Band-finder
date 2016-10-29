@@ -3,6 +3,10 @@ from flask import render_template, request
 from flask_wtf import Form
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
+from pymongo import MongoClient
+from flask_sqlalchemy import SQLAlchemy
+from models import User, Role
+from forms import NameForm
 
 import requests
 import json
@@ -14,7 +18,23 @@ REL_DEBUG = False
 IMG_DEBUG = False
 PREVIEW_DEBUG = True
 
+@app.route('/form', methods=['GET', 'POST'])
+def form_test():
+    name = None
+    form = NameForm()
+    if form.validate_on_submit():
+        name = form.name.data
+        form.name.data = ''
+    return render_template('login.html', form=form, name=name)
+    
+def mongo_client():
+    client = MongoClient("ds137207.mlab.com", 37207)
+    client.spotify.authenticate('david', 'password123')
+    db = client['spotify']
+    return db
 
+def postgress_client():
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://cwrbfaff:OfebqwY9QBEVmxKIlOdstOXCv_yeOGzp@tantor.db.elephantsql.com:5432/cwrbfaff' 
 def get_related_artists(artist_id):
 
     if REL_DEBUG:
@@ -133,7 +153,20 @@ def artist(name=""):
                            album_list=album_list,
                            image=get_artist_image(artist_id, image_num=1))
 
+@app.route('/login', methods = ['POST'])
+def login():
+    pass
 
+@app.route('/mongotest/<data>')
+def mongo_test(data):
+    
+    db = mongo_client()
+
+    try:
+        result = db.test.insert_one( { "address": data } )
+    except Exception as e:
+        print(e)
+    return data
 @app.route('/related-artists/<name>')
 def related_artists(name):
 
