@@ -23,7 +23,10 @@ def form_test():
     name = None
     form = NameForm()
     if form.validate_on_submit():
+        password = form.password.data
         name = form.name.data
+        print 'name from for is', name
+        print 'password is', password
         form.name.data = ''
     return render_template('login.html', form=form, name=name)
     
@@ -153,9 +156,6 @@ def artist(name=""):
                            album_list=album_list,
                            image=get_artist_image(artist_id, image_num=1))
 
-@app.route('/login', methods = ['POST'])
-def login():
-    pass
 
 @app.route('/mongotest/<data>')
 def mongo_test(data):
@@ -167,6 +167,11 @@ def mongo_test(data):
     except Exception as e:
         print(e)
     return data
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
 @app.route('/related-artists/<name>')
 def related_artists(name):
 

@@ -1,3 +1,7 @@
-{% import "bootstrap/wtf.html" as wtf %}
 
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+<div class="container">
 {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}:w

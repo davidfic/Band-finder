@@ -1,37 +1,32 @@
-<head>
-<link rel="stylesheet" href="{{url_for('.static', filename='mystyle.css')}}">
+{% extends "base.html" %}
 
-<script   src="https://code.jquery.com/jquery-3.1.1.min.js"  > </script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
+{% block content %}
 
-<script src="https://code.highcharts.com/highcharts-more.js"></script>
-
-<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
-</head>
-{% block body %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="/static/mystyle.css">
 <div class="container">
     <div class="jumbotron">
-      <h1>Artist Page for: <br>{{name | title}}</h1>
+      <h1>Artist Page for: <br>Beck</h1>
     </div> <!-- jumbrotron -->
 </div> <!-- container -->
-		<div style="width: 600px; height: 400px; margin: 0 auto">
-		    <div id="container-speed" style="width: 300px; height: 200px; float: left"></div>
-		    <div id="container-rpm" style="width: 300px; height: 200px; float: left"></div>
-		</div>
+    <div style="width: 600px; height: 400px; margin: 0 auto">
+        <div id="container-speed" style="width: 300px; height: 200px; float: left"></div>
+        <div id="container-rpm" style="width: 300px; height: 200px; float: left"></div>
+    </div>
 <div class="container">
-     <p>Artist name is:: {{name}}</p>
-
+    <p>Artist name is: {{name}}</p>
     <p>Artist ID is: {{id}}</p>
     <p>Popularity is: {{pop}}</p>
     <p>Folowers is: {{followers}}</p>
-    <p>Open in Spotify App: <a href="{{open_link}}">{{open_link}}</a></p>
-    <img src="{{image}}" alt="artist image">
+    <p>Open in Spotify App: <a href="{{open_link}}">{{open_link}}</a> </p>
+    <p><img src={{image}} alt="artist image"></img></p>
     <h2>Albums</h2>
-    {% for album in  album_list  %}
-      <p>{{loop.index}}:{{album}}</p>
+    {% for album in album_list %}
+      <p>{{album}}
     {% endfor %}
-    <br>
-    <h2><a href="related-artists/{{name}}">Get Related Artists</a></h2>
+   <br>
+    <h2><a href="related-artists/beck">Get Related Artists</a></h2>
 </div> <!--container-fluid-->
 
 <div class="container">
@@ -40,18 +35,14 @@
       <input type="submit" value="Submit" />
   </form>
 </div>
-
+<!--
 <script type=text/javascript>
 $(function () {
-
     var gaugeOptions = {
-
         chart: {
             type: 'solidgauge'
         },
-
         title: null,
-
         pane: {
             center: ['20%', '95%'],
             size: '40%',
@@ -64,11 +55,9 @@ $(function () {
                 shape: 'arc'
             }
         },
-
         tooltip: {
             enabled: false
         },
-
         // the value axis
         yAxis: {
             stops: [
@@ -86,7 +75,6 @@ $(function () {
                 y: 16
             }
         },
-
         plotOptions: {
             solidgauge: {
                 dataLabels: {
@@ -97,7 +85,6 @@ $(function () {
             }
         }
     };
-
     // The speed gauge
     $('#container-speed').highcharts(Highcharts.merge(gaugeOptions, {
         yAxis: {
@@ -107,11 +94,9 @@ $(function () {
                 text: 'Popularity'
             }
         },
-
         credits: {
             enabled: false
         },
-
         series: [{
             name: 'Popularity',
             data: [{{pop}}],
@@ -121,14 +106,15 @@ $(function () {
                 valueSuffix: ''
             }
         }]
-
     }));
-
  
 });
 </script>
 
-
+-->    
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
 {% endblock %}
 
 
