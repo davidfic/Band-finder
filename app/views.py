@@ -4,17 +4,30 @@ import requests
 import json
 import time
 import grequests
+from pprint import pprint
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
+# client_credentials_manager = SpotifyClientCredentials()
+# sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 # from pprint import pprint
 DEBUG = False
 REL_DEBUG = False
 IMG_DEBUG = False
 PREVIEW_DEBUG = True
 
+    
+client_credentials_manager = SpotifyClientCredentials()
+spotipy_client = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+
 
 def get_related_artists(artist_id):
 
+    
     if REL_DEBUG:
         start = time.time()
+    artist = spotify_client.artist(artist_id)
     request_string = 'https://api.spotify.com/v1/artists/' \
         + artist_id \
         + '/related-artists'
@@ -41,15 +54,19 @@ def load_preview_track_url(artist_id):
 def get_artist_id(artist_name):
     if DEBUG:
         start = time.time()
-    payload = {'q': artist_name, 'type': 'artist'}
+    # payload = {'q': artist_name, 'type': 'artist'}
 
-    r = requests.get("https://api.spotify.com/v1/search", params=payload)
-    # get json format from response and extract ID
-    if DEBUG:
-        end = time.time()
-        total_time = end - start
-        print('get_artist_id took {} seconds'.format(total_time))
-    return r.json()['artists']['items'][0]['id']
+    artist = spotipy_client.search(artist_name, type='artist')
+    
+    return artist['artists']['items'][0]['id']
+    # r = requests.get("https://api.spotify.com/v1/search", params=payload)
+    # # get json format from response and extract ID
+    # if DEBUG:
+    #     end = time.time()
+    #     total_time = end - start
+    #     print('get_artist_id took {} seconds'.format(total_time))
+    # pprint(r.json())
+    # return r.json()['artists']['items'][0]['id']
 
 
 def get_preview_tracks_async(preview_tracks):
@@ -67,6 +84,7 @@ def get_artist_image(artist_id, image_num=1):
     if IMG_DEBUG:
         start = time.time()
     id_get_start = time.time()
+    # yield spotipy_client.artist(artist_id)['images'][0]['url']
     r = requests.get('https://api.spotify.com/v1/artists/' + artist_id)
     id_get_stop = time.time()
     print('artist_id get took {} seconds'.format(id_get_stop - id_get_start))
@@ -89,30 +107,37 @@ def index():
 @app.route('/artist', methods=['GET', 'POST'])
 # @app.route('/artist/<name>', methods=['GET', 'POST'])
 def artist(name=""):
+    result = ""
     if DEBUG:
         start = time.time()
     if request.method == 'POST':
         result = request.form['name']
-    name = result
-    payload = {'q': name, 'type': 'artist'}
+    # name = result
+    # payload = {'q': result, 'type': 'artist'}
 #    r = requests.get('https://api.spotify.com/v1/search/', params=payload)
-    artist_id = get_artist_id(name)
-#    print('artist id is {}'.format(artist_id))
-    r = requests.get('https://api.spotify.com/v1/artists/' + artist_id) 
-    album_request_string = 'https://api.spotify.com/v1/artists/' + artist_id + '/albums'
-#    print 'album_request_string is: ', album_request_string
+    artist_id = get_artist_id(result)
+    # print('artist_id is {}'.format(artist_id))
+    artist = spotipy_client.artist(artist_id)
+    print(artist['popularity'])
+    # r = requests.get('https://api.spotify.com/v1/artists/' + artist_id) 
+    # album_request_string = 'https://api.spotify.com/v1/artists/' + artist_id + '/albums'
+    artist_albums = spotipy_client.artist_albums(artist_id)
+    # for k,v in artist_albums.iteritems():
+    #     print('k is {} and v is {}'.format(k,v))
+    # print 'album_request_string is: ', artist_albumns
 
-    album_request = requests.get(album_request_string)
+    # album_request = requests.get(album_request_string)
     album_list = []
 #    print(r.json())
-    for album in album_request.json()['items']:
-#        print album['name']
-        if album['name'] not in album_list:
-            album_list.append(album['name'])
+    for item in artist_albums['items']:
+        print(item['name'])
 
-    popularity = r.json()['popularity']
-    followers = r.json()['followers']['total']
-    open_link = r.json()['external_urls']['spotify']
+    popularity = artist['popularity']
+    followers = artist['followers']
+    open_link = artist['external_urls']['spotify']
+    # popularity = r.json()['popularity']
+    # followers = r.json()['followers']['total']
+    # open_link = r.json()['external_urls']['spotify']
 #    print('open_link is {}'.format( open_link))
 #    print('followers is {}'.format( followers))
 #    print('artist image url: {}'.format(get_artist_image(artist_id)))
