@@ -84,19 +84,20 @@ def get_artist_image(artist_id, image_num=1):
     if IMG_DEBUG:
         start = time.time()
     id_get_start = time.time()
-    # yield spotipy_client.artist(artist_id)['images'][0]['url']
-    r = requests.get('https://api.spotify.com/v1/artists/' + artist_id)
-    id_get_stop = time.time()
-    print('artist_id get took {} seconds'.format(id_get_stop - id_get_start))
-    image_list = r.json()['images']
-    if len(image_list) <= 2:
-        image_num = 1
-    if IMG_DEBUG:
-        end = time.time()
-        total_time = end - start
-        print('get_artist_image took {} seconds'.format(total_time))
+    yield spotipy_client.artist(artist_id)['images'][0]['url']
 
-    return r.json()['images'][image_num]['url']
+    # r = requests.get('https://api.spotify.com/v1/artists/' + artist_id)
+    # id_get_stop = time.time()
+    # print('artist_id get took {} seconds'.format(id_get_stop - id_get_start))
+    # image_list = r.json()['images']
+    # if len(image_list) <= 2:
+    #     image_num = 1
+    # if IMG_DEBUG:
+    #     end = time.time()
+    #     total_time = end - start
+    #     print('get_artist_image took {} seconds'.format(total_time))
+
+    # return r.json()['images'][image_num]['url']
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -112,39 +113,21 @@ def artist(name=""):
         start = time.time()
     if request.method == 'POST':
         result = request.form['name']
-    # name = result
-    # payload = {'q': result, 'type': 'artist'}
-#    r = requests.get('https://api.spotify.com/v1/search/', params=payload)
+
     artist_id = get_artist_id(result)
-    # print('artist_id is {}'.format(artist_id))
     artist = spotipy_client.artist(artist_id)
     print(artist['popularity'])
-    # r = requests.get('https://api.spotify.com/v1/artists/' + artist_id) 
-    # album_request_string = 'https://api.spotify.com/v1/artists/' + artist_id + '/albums'
     artist_albums = spotipy_client.artist_albums(artist_id)
-    # for k,v in artist_albums.iteritems():
-    #     print('k is {} and v is {}'.format(k,v))
-    # print 'album_request_string is: ', artist_albumns
-
-    # album_request = requests.get(album_request_string)
     album_list = []
-#    print(r.json())
     for item in artist_albums['items']:
         print(item['name'])
 
     popularity = artist['popularity']
     followers = artist['followers']
     open_link = artist['external_urls']['spotify']
-    # popularity = r.json()['popularity']
-    # followers = r.json()['followers']['total']
-    # open_link = r.json()['external_urls']['spotify']
-#    print('open_link is {}'.format( open_link))
-#    print('followers is {}'.format( followers))
-#    print('artist image url: {}'.format(get_artist_image(artist_id)))
     if DEBUG:
         end = time.time()
         total_time = end - start
-#        print('artist took {} seconds'.format(total_time))
     return render_template('artist.html',
                            name=name,
                            id=artist_id,
