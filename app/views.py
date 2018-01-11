@@ -27,21 +27,24 @@ def get_related_artists(artist_id):
     
     if REL_DEBUG:
         start = time.time()
-    artist = spotify_client.artist(artist_id)
-    request_string = 'https://api.spotify.com/v1/artists/' \
-        + artist_id \
-        + '/related-artists'
+    artist = spotipy_client.artist(artist_id)
+    related_artists = spotipy_client.artist_related_artists(artist_id)
+    # request_string = 'https://api.spotify.com/v1/artists/' \
+    #     + artist_id \
+    #     + '/related-artists'
 
-    r = requests.get(request_string)
+    # r = requests.get(request_string)
     related_artist_list = []
-    full_list = r.json()['artists']
-    for artist in r.json()['artists']:
-        related_artist_list.append(artist['name'])
-    if REL_DEBUG:
-        end = time.time()
-        total_time = end - start
-        print('get_related_artists took {} seconds'.format(total_time))
-    return full_list
+    for artist in related_artists['artists']:
+        print('artist name is: {}'.format(artist['name']))
+    # full_list = r.json()['artists']
+    # for artist in r.json()['artists']:
+    #     related_artist_list.append(artist['name'])
+    # if REL_DEBUG:
+    #     end = time.time()
+    #     total_time = end - start
+    #     print('get_related_artists took {} seconds'.format(total_time))
+    # return full_list
 
 
 def load_preview_track_url(artist_id):
@@ -108,7 +111,7 @@ def index():
 
 @app.route('/artist', methods=['GET', 'POST'])
 # @app.route('/artist/<name>', methods=['GET', 'POST'])
-def artist(name=""):
+def artist():
     result = ""
     if DEBUG:
         start = time.time()
@@ -130,7 +133,7 @@ def artist(name=""):
     for item in a_albums:
         print("item is {}".format(item))
     return render_template('artist.html',
-                           name=name,
+                           name=artist['name'],
                            id=artist_id,
                            followers=followers,
                            pop=popularity,
