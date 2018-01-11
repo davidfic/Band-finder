@@ -84,7 +84,8 @@ def get_artist_image(artist_id, image_num=1):
     if IMG_DEBUG:
         start = time.time()
     id_get_start = time.time()
-    yield spotipy_client.artist(artist_id)['images'][0]['url']
+    print('url is {}'.format(spotipy_client.artist(artist_id)['images'][0]['url']))
+    return spotipy_client.artist(artist_id)['images'][0]['url']
 
     # r = requests.get('https://api.spotify.com/v1/artists/' + artist_id)
     # id_get_stop = time.time()
@@ -116,11 +117,8 @@ def artist(name=""):
 
     artist_id = get_artist_id(result)
     artist = spotipy_client.artist(artist_id)
-    print(artist['popularity'])
     artist_albums = spotipy_client.artist_albums(artist_id)
     album_list = []
-    for item in artist_albums['items']:
-        print(item['name'])
 
     popularity = artist['popularity']
     followers = artist['followers']
@@ -128,13 +126,16 @@ def artist(name=""):
     if DEBUG:
         end = time.time()
         total_time = end - start
+    a_albums = artist_albums['items']
+    for item in a_albums:
+        print("item is {}".format(item))
     return render_template('artist.html',
                            name=name,
                            id=artist_id,
                            followers=followers,
                            pop=popularity,
                            open_link=open_link,
-                           album_list=album_list,
+                           album_list=artist_albums['items'],
                            image=get_artist_image(artist_id, image_num=1))
 
 

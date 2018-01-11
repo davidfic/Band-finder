@@ -27,8 +27,8 @@
     <p>Open in Spotify App: <a href="{{open_link}}">{{open_link}}</a></p>
     <img src="{{image}}" alt="artist image">
     <h2>Albums</h2>
-    {% for album in  album_list  %}
-      <p>{{loop.index}}:{{album}}</p>
+    {% for album in album_list  %}
+      <p>{{loop.index}}:{{album['name']}}</p>
     {% endfor %}
     <br>
     <h2><a href="related-artists/{{name}}">Get Related Artists</a></h2>
