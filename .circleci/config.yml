@@ -1,8 +1,8 @@
 version: 2
+dependencies:
+  pre:
+    - pip install -f requirements.txt
 jobs:
-  dependencies:
-    pre:
-      - pip install -f requirements.txt
   build:
     machine: true
     steps: 
