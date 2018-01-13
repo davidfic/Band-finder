@@ -1,16 +1,9 @@
 version: 2
-dependencies:
-  pre:
-    - pip install -f requirements.txt
 jobs:
   build:
-    machine: true
-    steps: 
+    docker:
+      - image: circleci/python:2.17
+    steps:
       - checkout
-      - run: python run.py ; python tests/artist_id_test.py 
-workflows:
-  version: 2
-  buil:
-    jobs:
-      - build
-
+      - run: pip install -r requirements.txt
+      
