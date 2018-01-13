@@ -6,4 +6,5 @@ jobs:
     steps:
       - checkout
       - run: pip install -r requirements.txt
-      
+      - run: python run.py
+      - run: python tests/artist_id_test.py
