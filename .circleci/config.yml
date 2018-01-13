@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:2.17
+      - image: circleci/python:2.7.13
     steps:
       - checkout
       - run: pip install -r requirements.txt
