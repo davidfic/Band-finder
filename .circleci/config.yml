@@ -1,11 +1,10 @@
 version: 2
 jobs:
   build:
-    docker:
-      - image: davidfic/bandfinder:latest
-    steps:
+    # machine: true
+    steps: 
       - checkout
-      - run: echo "hello there"
+      - run: python run.py ; python tests/artist_id_test.py 
 workflows:
   version: 2
   buil:
