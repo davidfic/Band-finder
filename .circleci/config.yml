@@ -3,6 +3,9 @@ jobs:
   build:
     docker:
       - image: circleci/python:2.7.13
+        environment:
+          SPOTIPY_CLIENT_ID: f20cbdf1674b4f56b3b4762f9a4e92e7
+          SPOTIPY_CLIENT_SECRET: bf7daee4221645aaaba0cefb302330ff
     steps:
       - checkout
       - run: sudo pip install -r requirements.txt
