@@ -5,7 +5,7 @@ jobs:
       - image: davidfic/bandfinder:latest
     steps:
       - checkout
-      - run: apt update && apt install -y curl && curl localhost:5555
+      - run: echo "hello there"
 workflows:
   version: 2
   buil:
