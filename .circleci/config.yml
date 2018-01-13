@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: davidfic/bandfinder:latest
+    steps:
+      - checkout
+      - run: curl localhost:5555
+  test:
+    docker:
+      - image: davidfic/bandfinder:latest
+    steps:
+      - checkout
+      - run: curl localhost:5555
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - test

@@ -29,14 +29,16 @@ def get_related_artists(artist_id):
         start = time.time()
     artist = spotipy_client.artist(artist_id)
     related_artists = spotipy_client.artist_related_artists(artist_id)
+    
     # request_string = 'https://api.spotify.com/v1/artists/' \
     #     + artist_id \
     #     + '/related-artists'
 
     # r = requests.get(request_string)
-    related_artist_list = []
-    for artist in related_artists['artists']:
-        print('artist name is: {}'.format(artist['name']))
+    # related_artist_list = []
+    if DEBUG:
+        for artist in related_artists['artists']:
+            print('artist name is: {}'.format(artist['name']))
     # full_list = r.json()['artists']
     # for artist in r.json()['artists']:
     #     related_artist_list.append(artist['name'])
@@ -45,35 +47,40 @@ def get_related_artists(artist_id):
     #     total_time = end - start
     #     print('get_related_artists took {} seconds'.format(total_time))
     # return full_list
-
+    return related_artists
 
 def load_preview_track_url(artist_id):
     # payload = {'country': 'US'}
-    return 'https://api.spotify.com/v1/artists/' \
-        + artist_id \
-        + '/top-tracks?country=US'
+    tracks = spotipy_client.artist_top_tracks(artist_id, country='US')
+    top_tracks = []
+    count = 0
+    for track in tracks['tracks']:
+        if count > 0:
+            break
+        if track['preview_url'] is not None:
+            count += 1
+            print('adding {} to top_tracks'.format(track['preview_url']))
+            top_tracks.append(track['preview_url'])
+        else:
+            top_tracks.append(" ")
+    
+    print('length of top_tracks is {}'.format(len(top_tracks)))
+    if len(top_tracks) > 0:
+        return top_tracks[0]
+    return top_tracks
 
 
 def get_artist_id(artist_name):
-    if DEBUG:
-        start = time.time()
-    # payload = {'q': artist_name, 'type': 'artist'}
-
+    """
+    return the Spotify ID of the given artist name
+    """
     artist = spotipy_client.search(artist_name, type='artist')
-    
     return artist['artists']['items'][0]['id']
-    # r = requests.get("https://api.spotify.com/v1/search", params=payload)
-    # # get json format from response and extract ID
-    # if DEBUG:
-    #     end = time.time()
-    #     total_time = end - start
-    #     print('get_artist_id took {} seconds'.format(total_time))
-    # pprint(r.json())
-    # return r.json()['artists']['items'][0]['id']
 
 
 def get_preview_tracks_async(preview_tracks):
     urls = preview_tracks
+    print('in async preview_tracks are {}'.format(preview_tracks))
     rs = (grequests.get(u) for u in urls)
     preview_urls = []
     for response in grequests.map(rs):
@@ -87,24 +94,13 @@ def get_artist_image(artist_id, image_num=1):
     if IMG_DEBUG:
         start = time.time()
     id_get_start = time.time()
-    print('url is {}'.format(spotipy_client.artist(artist_id)['images'][0]['url']))
+    if DEBUG:
+        print('url is {}'.format(spotipy_client.artist(artist_id)['images'][0]['url']))
+    
     return spotipy_client.artist(artist_id)['images'][0]['url']
 
-    # r = requests.get('https://api.spotify.com/v1/artists/' + artist_id)
-    # id_get_stop = time.time()
-    # print('artist_id get took {} seconds'.format(id_get_stop - id_get_start))
-    # image_list = r.json()['images']
-    # if len(image_list) <= 2:
-    #     image_num = 1
-    # if IMG_DEBUG:
-    #     end = time.time()
-    #     total_time = end - start
-    #     print('get_artist_image took {} seconds'.format(total_time))
 
-    # return r.json()['images'][image_num]['url']
-
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')#, methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
@@ -120,7 +116,7 @@ def artist():
 
     artist_id = get_artist_id(result)
     artist = spotipy_client.artist(artist_id)
-    artist_albums = spotipy_client.artist_albums(artist_id)
+    artist_albums = spotipy_client.artist_albums(artist_id,country='US')
     album_list = []
 
     popularity = artist['popularity']
@@ -129,9 +125,9 @@ def artist():
     if DEBUG:
         end = time.time()
         total_time = end - start
-    a_albums = artist_albums['items']
-    for item in a_albums:
-        print("item is {}".format(item))
+    if DEBUG:
+        for item in artist_albums['items']:
+            print("item is {}".format(item))
     return render_template('artist.html',
                            name=artist['name'],
                            id=artist_id,
@@ -144,39 +140,33 @@ def artist():
 
 @app.route('/related-artists/<name>')
 def related_artists(name):
-
-    print "received the name: {} from call".format(name)
-
-    if DEBUG:
-        start = time.time()
-
     artist_image = []
     related_artists_ids = []
     preview_track_urls = []
     name_list = []
 
+    artist_id = get_artist_id(name)
+    print(artist_id)
     related_artists = get_related_artists(get_artist_id(name))
-
-    for related_artist in related_artists:
+    
+    for related_artist in related_artists['artists']:
+        name_list.append(related_artist['name'])
         related_artists_ids.append(related_artist['id'])
         artist_image.append(related_artist['images'][1]['url'])
         preview_track_urls.append(load_preview_track_url(related_artist['id']))
-
-    for item in related_artists:
-        name_list.append(item['name'])
-
-    preview_tracks = get_preview_tracks_async(preview_track_urls)
+    # preview_tracks = get_preview_tracks_async(preview_track_urls)
 
     zipped_list = zip(name_list,
                       related_artists_ids,
-                      artist_image, preview_tracks)
+                      artist_image,
+                      preview_track_urls)
+                    
 
     if DEBUG:
-        end = time.time()
-        total_time = end - start
         print('related_artists took {} seconds'.format(total_time))
 
     return render_template('related-artist.html',
                            name=name,
                            id=related_artists_ids,
                            related=zipped_list)
+                           
