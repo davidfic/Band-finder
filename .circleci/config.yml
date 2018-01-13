@@ -8,7 +8,7 @@ jobs:
       - run: curl localhost:5555
 workflows:
   version: 2
-  build_and_test:
+  buil:
     jobs:
       - build
-      - test
+
