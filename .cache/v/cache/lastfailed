@@ -1,0 +1,5 @@
+{
+  "test_bandfinder/test_artist_id.py": true, 
+  "test_bandfinder/test_artist_id.py::test_artist_id": true, 
+  "test_bandfinder/test_bandfinder.py": true
+}

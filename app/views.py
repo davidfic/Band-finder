@@ -1,4 +1,4 @@
-from app import app
+from app import create_app
 from flask import render_template, request
 import requests
 import json
@@ -16,7 +16,7 @@ REL_DEBUG = False
 IMG_DEBUG = False
 PREVIEW_DEBUG = True
 
-    
+app = create_app()
 client_credentials_manager = SpotifyClientCredentials()
 spotipy_client = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
 
