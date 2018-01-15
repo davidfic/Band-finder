@@ -9,4 +9,4 @@ jobs:
     steps:
       - checkout
       - run: sudo pip install -r requirements.txt
-      - run: python tests/artist_id_test.py
+      - run: python test_bandfinder/test_artist_id.py
